@@ -83,7 +83,7 @@ todas.test <- todas2[1:30]
 
 pruebaTercera <- list()
 
-before doing the scraping we need to understand what's the HTML code of each part of the article. So go to one or two links and use inspect on chrome and clic
+#before doing the scraping we need to understand what's the HTML code of each part of the article. So go to one or two links and use inspect on chrome and clic
 #on each part and copy the full xpath.
 #For example, in La Tercera these are the parts for headlines, date, and body of the article:
 #headline
