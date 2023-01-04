@@ -51,3 +51,5 @@ foo()
 news2 = pandas.DataFrame(posts)
 len(news2)
 news2.to_csv('Emol_agosto.csv')
+
+#now, to download the content of each article please check emolscraping_2.R
