@@ -31,6 +31,8 @@ for (i in 1:length(page)) {
   urls[[i]] <- url
 }
 
+#after creating the links we have to download each article link
+
 length(urls)
 
 alfa<- list()
@@ -39,25 +41,23 @@ for (j in seq_along(urls)) {
   
   alfa[[j]]<- urls[[j]]%>%
     session()%>%
+#you can check the xpath by inspecting the webpage in chrome
     html_nodes(xpath = "/html/body/div/div/div/main/section/div/article/div/div/h3/a")%>%
-    html_attr('href')
-    
+    html_attr('href')   
 #we add a print to get the nomber of each page in case there is some error (404 error) or problem with our connection
-
   print(j)
 }
 
 #the way /html/body/div/div/div/main/section/div/article/div/div/h3/a works in https://www.latercera.com/etiqueta/coronavirus/page/
-#gives you only part of the URL, so we have to create the rest:
+#gives you the URL without the "https://www.latercera.com", so we have to create the rest:
 # incomplete links, create full link ------------------------------------------
 
 todas <- as.list(paste0("https://www.latercera.com",unlist(alfa)))
 length(todas) #check how many links you get
 class(todas) #just to be sure lets check if it created a list 
 toda.news <- unlist(todas) #"todas" is a list that contains list so create an list with all the links
-View(toda.news)
+View(toda.news) 
 length(toda.news)
-
 #because we only get a couple of thousands links we will save them in an excel
 library(xlsx)
 
@@ -72,7 +72,6 @@ linksLaTercera <- read_excel("LINKS/linksLaTercera.xlsx")
 toda.news<-linksLaTercera$x
 
 length(todas2)
-
 class(toda.news)
 
 todas2<-as.list(toda.news)
@@ -107,7 +106,7 @@ for (j in seq_along(todas2)) {
 pruebaTercera
 
 #after this we have a big list (30 lists) with other lists inside 
-#because of how the website is desing we know that each list has these characteristicas
+#because of how the website is desing we know that each list has these characteristics
 #list[[i]][1] #contains the headline
 #list[[i]][2] #contains the date
 #and from list[[i]][3] till the last value of n (list[[i]][n]) it #contains the body of the article. 
