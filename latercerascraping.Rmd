@@ -10,6 +10,15 @@ library(stringr)
 library(ldatuning)
 library(rlist)
 library(stm)
+```{r, eval = FALSE}
+#webscraping chilean (digital) media outlets -----------------------------------------
+#load packages
+install.packages("rvest")
+install.packages("tidyverse")
+
+library(rvest)
+library(tidyverse)
+```
 
 #create links to download links of each news -----------------------------------------------
 #go to the media outlet from wbere you want to get the data and see if their search bar gives you results per page or on a slide manner
