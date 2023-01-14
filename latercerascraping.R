@@ -13,9 +13,9 @@ library(stm)
 
 #create links to download links of each news -----------------------------------------------
 #go to the media outlet from wbere you want to get the data and see if their search bar gives you results per page or on a slide manner
-#if its per page you also have to check that going to the next page doesn't involves the use of some javascript in the page that doesn't change the URL
-#for example, https://www.latercera.com/etiqueta/coronavirus/ gives you pages and each time you change to the next one you get a new URL
-#but https://www.emol.com/tag/coronavirus/1566/todas.aspx makes a query without changing the page. For the first case we use R and for the second case we
+#if its per page you also have to check that going to the next page doesn't involve the use of some javascript in the page that doesn't change the URL,
+#for example, https://www.latercera.com/etiqueta/coronavirus/ gives you pages and each time you change to the next one you get a new URL. On the other hand,
+# https://www.emol.com/tag/coronavirus/1566/todas.aspx makes a query without changing the page. For the first case we use R and for the second case we
 #use python to download the links (check the other repo to get that code)
 
 #after checking we can see that  https://www.latercera.com/etiqueta/coronavirus/ has 667 pages, so 667 links where we have to get the other links
@@ -31,6 +31,21 @@ for (i in 1:length(page)) {
   urls[[i]] <- url
 }
 
+#alternatively you could also create a function 
+#latercera_links <-function (x,y){
+#    page<- (1:y)
+#    urls2 <- list()
+#    
+#    for (i in 1:length(page))  {
+#    url2 <- paste0(x,page[i])
+#    urls2[[i]] <- url2
+#    }
+#    print(urls2)   #you must create the print(urls2) function, other wise it will create an empty list on urls2
+#}
+#
+#latercera_links("https://www.latercera.com/etiqueta/coronavirus/page/",3)->noticias #you must also asign the function to an object to save the list
+#noticias
+
 #after creating the links we have to download each article link
 
 length(urls)
@@ -38,15 +53,21 @@ length(urls)
 alfa<- list()
 
 for (j in seq_along(urls)) {
-  
+  try({ #we use try because sometimes our connection may not be the best, so we want the code to skips some links when thats the case
   alfa[[j]]<- urls[[j]]%>%
     session()%>%
-#you can check the xpath by inspecting the webpage in chrome
+    #you can check the xpath by inspecting the webpage in chrome
+
     html_nodes(xpath = "/html/body/div/div/div/main/section/div/article/div/div/h3/a")%>%
-    html_attr('href')   
-#we add a print to get the nomber of each page in case there is some error (404 error) or problem with our connection
+    html_attr('href')
+    #we add a print to get the nomber of each page in case there is some error (404 error) or problem with our connection
   print(j)
+  })
 }
+
+#we have created our links list named alfa. Lke stated previously, some error may have happened and we skipped those links.
+#now, the links we skipped are a empty list, as such we assign a value to this list naming it "perdido"-
+alfa[lengths(alfa) == 0] <- "/PERDIDO"
 
 #the way /html/body/div/div/div/main/section/div/article/div/div/h3/a works in https://www.latercera.com/etiqueta/coronavirus/page/
 #gives you the URL without the "https://www.latercera.com", so we have to create the rest:
@@ -56,8 +77,6 @@ todas <- as.list(paste0("https://www.latercera.com",unlist(alfa)))
 length(todas) #check how many links you get
 class(todas) #just to be sure lets check if it created a list 
 toda.news <- unlist(todas) #"todas" is a list that contains list so create an list with all the links
-View(toda.news) 
-length(toda.news)
 #because we only get a couple of thousands links we will save them in an excel
 library(xlsx)
 
@@ -92,16 +111,20 @@ pruebaTercera <- list()
 #body of article
 #/html/body/div/div/section/article/div/div/div/div/div/p
 
-for (j in seq_along(todas2)) {
+for (j in seq_along(todas2)) {try({ #we use try again to skip the 404# errors, creating an empty list when that happens
   pruebaTercera[[j]] <- todas2[[j]] %>% 
     session() %>% 
-    html_nodes(xpath = "/html/body/div/div/section/article/header/div/div/h1/div|
+    html_nodes(xpath = "/html/body/div/div/section/article/header/div/div/h1/div| 
                      /html/body/div/div/section/article/header/div/div/div/time|
              /html/body/div/div/section/article/div/div/div/div/div/p") %>%
     html_text()
-#again, we use print to see if there are any 404 errors or issues with our connection and to see how many links R has checked
+  #again, we use print to see if there are any 404 errors or issues with our connection and to see how many links R has checked
   print(j)
+})
 }
+
+#we replace the error #404 links, which are an empty list, with "PERDIDO".
+pruebaTercera[lengths(pruebaTercera) == 0] <- "PERDIDO"
 
 pruebaTercera
 
